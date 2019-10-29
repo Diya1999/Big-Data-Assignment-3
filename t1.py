@@ -52,9 +52,9 @@ lines = (
 # )
 
 
-wordCounts = lines.select(split(lines.Hashtags,",").alias("sp"))
-wordCounts1 = flatten(wordCounts.sp)
-wordCounts=wordCounts.select(wordCounts1)
+wordCounts = lines.select(split(lines.Hashtags,",").flatten(wordCounts.sp))
+#wordCounts1 = flatten(wordCounts.sp)
+#wordCounts=wordCounts.select(wordCounts1)
 
 
 #wordCounts = flatten(wordCounts.sp)
