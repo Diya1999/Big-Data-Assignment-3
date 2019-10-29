@@ -1,5 +1,6 @@
 from pyspark.sql import SparkSession,Row
 from pyspark.sql.functions import explode
+from pyspark.sql.functions import *
 from pyspark.sql.functions import split,flatten
 from pyspark.sql.types import StructType
 
@@ -19,7 +20,6 @@ spark = SparkSession.builder.appName("CommonHash").getOrCreate()
 # userSchema= StructType().add("word","string").add("id","integer")
 userSchema = (
     StructType()
-    .add("n", "integer")
     .add("id", "integer")
     .add("Lang", "string")
     .add("Date", "string")
@@ -52,13 +52,16 @@ lines = (
 # )
 
 
-wordCounts = lines.select(split(lines.Hashtags,",").flatten(wordCounts.sp))
-#wordCounts1 = flatten(wordCounts.sp)
-#wordCounts=wordCounts.select(wordCounts1)
+# wordCounts = lines.select(split(lines.Hashtags,",").alias('sp').flatten(wordCounts.sp)
+# wordCounts = flatten(wordCounts.sp).alias("F")
 
+# wordCounts = flatten(wordCounts.sp).alias("F")
+# wordCounts = wordCounts.select("F")
 
-#wordCounts = flatten(wordCounts.sp)
-
+wordCounts = lines.select(explode(split(lines.Hashtags,",")).alias("sp"))
+wordCounts = wordCounts.groupby("sp").count().sort("count",ascending=False)
+# wordCounts = sort_array(wordCounts.count)
+# wordCounts = wordCounts.select(sorted(wordCounts.groupBy("sp").agg({"count":"count"})))
 
 # wordCounts = 
 #     .map(lambda word: (word, 1))
@@ -74,6 +77,6 @@ wordCounts = lines.select(split(lines.Hashtags,",").flatten(wordCounts.sp))
 # query = wordCounts.writeStream.foreach(process_row).start()
 # wordCounts = wordCounts.RDD
 
-query = wordCounts.writeStream.outputMode("update").format("console").start()
+query = wordCounts.writeStream.outputMode("complete").format("console").start()
 
 query.awaitTermination()
