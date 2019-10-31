@@ -27,7 +27,7 @@ userSchema = (
     .add("Hashtags", "string")
     .add("UserMentionNames", "string")
     .add("UserMentionID", "string")
-    .add("Name", "string")
+    .add("name", "string")
     .add("Place", "string")
     .add("Followers", "integer")
     .add("Friends", "integer")
@@ -43,8 +43,8 @@ lines = (
 
 df = lines.withColumn("ratio",lines.Followers/lines.Friends)
 
-df = df.select("Name","ratio").groupby("Name","ratio").count()
-df= df.select("Name","ratio").sort("ratio",ascending=False).limit(1)
+df = df.select("name","ratio").groupby("name","ratio").count()
+df= df.select("name","ratio").sort("ratio",ascending=False).limit(1)
 #df.createOrReplaceTempView("view")
 #res=spark.sql("SELECT Name,ratio from view where ratio=(SELECT max(ratio) from view)")
 # df = df.select("Name","ratio").where("ratio"==r)
@@ -56,4 +56,5 @@ df= df.select("Name","ratio").sort("ratio",ascending=False).limit(1)
 
 query = df.writeStream.outputMode("complete").format("console").start()
 
-query.awaitTermination()
+query.awaitTermination(100)
+query.stop()
