@@ -10,9 +10,6 @@ from pyspark.sql import Row, SQLContext
 from pyspark.sql.types import Row
 from pyspark import SparkContext
 
-def process_row(row):
-    pass
-
 
 spark = SparkSession.builder.appName("CommonHash").getOrCreate()
 
@@ -45,38 +42,11 @@ lines = (
 )
 
 
-# words = lines.select(
-#    explode(
-#        split(lines.value, ";")
-#    ).alias("word")
-# )
-
-
-# wordCounts = lines.select(split(lines.Hashtags,",").alias('sp').flatten(wordCounts.sp)
-# wordCounts = flatten(wordCounts.sp).alias("F")
-
-# wordCounts = flatten(wordCounts.sp).alias("F")
-# wordCounts = wordCounts.select("F")
-
-wordCounts = lines.select(explode(split(lines.Hashtags,",")).alias("sp"))
-wordCounts = wordCounts.groupby("sp").count().sort("count",ascending=False)
-# wordCounts = sort_array(wordCounts.count)
-# wordCounts = wordCounts.select(sorted(wordCounts.groupBy("sp").agg({"count":"count"})))
-
-# wordCounts = 
-#     .map(lambda word: (word, 1))
-#     .reduceByKey(add)
-# )
-# wordCounts = wordCounts.collect()
-
-
-# wordCounts=lines.groupBy("UserMentionID").count()
-
-# wordCounts=lines.select("Hashtags").count()
-
-# query = wordCounts.writeStream.foreach(process_row).start()
-# wordCounts = wordCounts.RDD
+wordCounts = lines.select(explode(split(lines.Hashtags,",")).alias("Hashtag"))
+wordCounts = wordCounts.groupby("sp").count().sort("count",ascending=False).limit(5)
 
 query = wordCounts.writeStream.outputMode("complete").format("console").start()
 
-query.awaitTermination()
+query.awaitTermination(100)
+
+query.stop()
