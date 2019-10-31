@@ -1,0 +1,40 @@
+hdfs namenode -format
+
+start-all.sh
+
+hadoop fs -mkdir /assignment
+
+hdfs dfs -put /home/cdiya/Downloads/alldata.csv /assignment
+
+hdfs dfs -ls /assignment
+
+hadoop jar Apache/hadoop/share/hadoop/tools/lib/hadoop-streaming-3.2.0.jar -file /home/cdiya/hduser/mapper10.py /home/cdiya/hduser/reducer10.py -mapper "python mapper10.py" -reducer "python reducer10.py" -input /assignment/input.txt -output /assignment/output.txt
+
+hdfs dfs -cat /test/output.txt/part-00000
+
+
+
+SPARK INSTRUCTIONS:
+
+hdfs namenode -format
+start-all.sh
+hadoop fs -mkdir /assignment
+hdfs dfs -put /home/cdiya/Downloads/pgr.txt /assignment
+
+Go for sbin and then start-master
+
+sudo /opt/spark/sbin/start-master.sh
+./start-slave.sh spark://cdiya-VirtualBox:7077
+run jps to check if sparksubmit is working
+check localhost:8080 to find path
+go to /opt/spark
+bin/spark-submit /home/cdiya/Downloads/plpr.py  /home/cdiya/Downloads/pgr.txt 5
+stop-slave.sh
+stop-master.sh
+stop-all.sh
+
+SPARK Streaming
+
+steps above
+run python3 spark.py
+bin/spark-submit /home/cdiya/Downloads/spark.py > /home/cdiya/Downloads/out.txt
