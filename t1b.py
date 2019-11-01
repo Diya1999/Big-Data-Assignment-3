@@ -41,10 +41,10 @@ lines = (
     .load("hdfs://localhost:9000/stream")
 )
 
-df = lines.withColumn("ratio",lines.Followers/lines.Friends)
+df = lines.withColumn("FRRatio",lines.Followers/lines.Friends)
 
-df = df.select("name","ratio").groupby("name","ratio").count()
-df= df.select("name","ratio").sort("ratio",ascending=False).limit(1)
+df = df.select("name","FRRatio").groupby("name","FRRatio").count()
+df= df.select("name","FRRatio").sort("FRRatio",ascending=False).limit(1)
 #df.createOrReplaceTempView("view")
 #res=spark.sql("SELECT Name,ratio from view where ratio=(SELECT max(ratio) from view)")
 # df = df.select("Name","ratio").where("ratio"==r)
