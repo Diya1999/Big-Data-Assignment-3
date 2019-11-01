@@ -42,8 +42,8 @@ lines = (
 )
 
 
-wordCounts = lines.select(explode(split(lines.Hashtags,",")).alias("Hashtag"))
-wordCounts = wordCounts.groupby("sp").count().sort("count",ascending=False).limit(5)
+wordCounts = lines.select(explode(split(lines.Hashtags,",")).alias("Hashtags"))
+wordCounts = wordCounts.groupby("Hashtags").count().sort("count",ascending=False).limit(5)
 
 query = wordCounts.writeStream.outputMode("complete").format("console").start()
 
