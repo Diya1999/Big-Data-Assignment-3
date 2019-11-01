@@ -17,21 +17,20 @@ from pyspark.sql.functions import split
 from pyspark.sql.functions import window
 
 
-# def limitRDD(rdd,limit):
-#     hashtagList=[]
-#     for hashtag,count in rdd.collect():
-#         if(len(hashtagList)<limit):
-#             hashtagList.append(hashtag)
-#         else:
-#             break
-#     return(hashtagList)
-    
-def printRDD(rdd):
-    HList=[]
-    for hashtag,count in rdd.collect():
-        Hlist.append(hashtag)
+
+def printrdd(rdd):
+	Hlist=[]
+	i=0
+	for hashtag in rdd.collect():
+		if(hashtag!=''):
+			Hlist.append(hashtag)
+			i=i+1
+		if(i==5):
+			break
+	string = ",".join(Hlist)
+	print(string)
     #Hlist=HList[0:-1]
-    print(Hlist)
+    
         
 
 
@@ -64,22 +63,10 @@ if __name__ == "__main__":
     topHash = windowedWordCounts.transform(lambda rdd: rdd.sortBy(lambda x:(-x[1],x[0]),ascending=True))
     #topHash = topHash.transform(lambda rdd:))
     topHash = topHash.transform(lambda rdd: rdd.map(lambda x: x[0]))
-    #topHash=topHash.transform(lambda rdd: rdd[0])
-    #topHash.foreachRDD(printRDD)
-    topHash.transform(lambda rdd: rdd.take(5).foreach(println))
+    topHash.foreachRDD(printrdd)
    
     #topHash.pprint(5)
-    # h = hashtag.groupBy(lambda x: x[0]).map(lambda y: y[1].reduce(add))
-    # hashtag.pprint()
-    # h.pprint()
-    #windowedWordCounts = hashtag.reduceByKey(add)
     
-    # h = hashtag.countByWindow(int(window_size),1)
-    # h.pprint()
-    # windowedWordCounts = hashtag.countByValueAndWindow(int(window_size),1)
-    # windowedWordCounts = hashtag.countByWindow(int(window_size),1)
-
-    # windowedWordCounts.pprint()
 
     ssc.start()
     
