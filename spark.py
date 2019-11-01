@@ -17,6 +17,25 @@ from pyspark.sql.functions import split
 from pyspark.sql.functions import window
 
 
+# def limitRDD(rdd,limit):
+#     hashtagList=[]
+#     for hashtag,count in rdd.collect():
+#         if(len(hashtagList)<limit):
+#             hashtagList.append(hashtag)
+#         else:
+#             break
+#     return(hashtagList)
+    
+def printRDD(rdd):
+    HList=[]
+    for hashtag,count in rdd.collect():
+        Hlist.append(hashtag)
+    #Hlist=HList[0:-1]
+    print(Hlist)
+        
+
+
+
 if __name__ == "__main__":
 
     window_size, batch_size = int(sys.argv[1]), int(sys.argv[2])
@@ -24,7 +43,7 @@ if __name__ == "__main__":
     conf.setAppName("BigData")
     sc = SparkContext(conf=conf)
     ssc = StreamingContext(sc, int(batch_size))
-    ssc.checkpoint("/home/kishan/Downloads/chkpt ")
+    ssc.checkpoint("/home/cdiya/Downloads/checkpoints")
     lines = ssc.socketTextStream("localhost", 9009)
     # lines = lines.window(int(window_size),1)
     # lines.pprint()
@@ -42,11 +61,14 @@ if __name__ == "__main__":
     # windowedWordCounts.pprint()
     windowedWordCounts = windowedWordCounts.filter(lambda x: x[0]!='')
     
-    topHash = windowedWordCounts.transform(lambda rdd: rdd.sortBy(lambda x:x[1],ascending=False))
-    
-    # topHash.foreachRDD(printrdd)
-    
-    topHash.pprint()
+    topHash = windowedWordCounts.transform(lambda rdd: rdd.sortBy(lambda x:(-x[1],x[0]),ascending=True))
+    #topHash = topHash.transform(lambda rdd:))
+    topHash = topHash.transform(lambda rdd: rdd.map(lambda x: x[0]))
+    #topHash=topHash.transform(lambda rdd: rdd[0])
+    #topHash.foreachRDD(printRDD)
+    topHash.transform(lambda rdd: rdd.take(5).foreach(println))
+   
+    #topHash.pprint(5)
     # h = hashtag.groupBy(lambda x: x[0]).map(lambda y: y[1].reduce(add))
     # hashtag.pprint()
     # h.pprint()
@@ -60,6 +82,7 @@ if __name__ == "__main__":
     # windowedWordCounts.pprint()
 
     ssc.start()
+    
     ssc.awaitTermination(25)
     ssc.stop()
 
