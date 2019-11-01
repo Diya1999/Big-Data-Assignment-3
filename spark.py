@@ -19,7 +19,7 @@ from pyspark.sql.functions import window
 
 if __name__ == "__main__":
 
-    window_size, batch_size = sys.argv[1], sys.argv[2]
+    window_size, batch_size = int(sys.argv[1]), int(sys.argv[2])
     conf = SparkConf()
     conf.setAppName("BigData")
     sc = SparkContext(conf=conf)
@@ -34,15 +34,16 @@ if __name__ == "__main__":
     # words.pprint()
             
     hashtag = words.map(lambda x: (x,1))
-    hashtag.pprint()
+    # hashtag.pprint()
     
-    hashtag = hashtag.rdd
+    #hashtag = hashtag.rdd
     
-    # windowedWordCounts = hashtag.reduceByKeyAndWindow(lambda x,y:x+y,lambda x,y:x-y,int(window_size),1)
+    windowedWordCounts = hashtag.reduceByKeyAndWindow(lambda x,y:x+y,lambda x,y:x-y,int(window_size),1)
+    # windowedWordCounts.pprint()
     # h = hashtag.groupBy(lambda x: x[0]).map(lambda y: y[1].reduce(add))
     # hashtag.pprint()
     # h.pprint()
-    windowedWordCounts = hashtag.reduceByKey(add)
+    #windowedWordCounts = hashtag.reduceByKey(add)
     
     # h = hashtag.countByWindow(int(window_size),1)
     # h.pprint()
@@ -50,6 +51,8 @@ if __name__ == "__main__":
     # windowedWordCounts = hashtag.countByWindow(int(window_size),1)
 
     windowedWordCounts.pprint()
+    
+    
 
     ssc.start()
     ssc.awaitTermination(25)
