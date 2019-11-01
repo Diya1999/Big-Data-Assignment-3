@@ -40,6 +40,13 @@ if __name__ == "__main__":
     
     windowedWordCounts = hashtag.reduceByKeyAndWindow(lambda x,y:x+y,lambda x,y:x-y,int(window_size),1)
     # windowedWordCounts.pprint()
+    windowedWordCounts = windowedWordCounts.filter(lambda x: x[0]!='')
+    
+    topHash = windowedWordCounts.transform(lambda rdd: rdd.sortBy(lambda x:x[1],ascending=False))
+    
+    # topHash.foreachRDD(printrdd)
+    
+    topHash.pprint()
     # h = hashtag.groupBy(lambda x: x[0]).map(lambda y: y[1].reduce(add))
     # hashtag.pprint()
     # h.pprint()
@@ -50,9 +57,7 @@ if __name__ == "__main__":
     # windowedWordCounts = hashtag.countByValueAndWindow(int(window_size),1)
     # windowedWordCounts = hashtag.countByWindow(int(window_size),1)
 
-    windowedWordCounts.pprint()
-    
-    
+    # windowedWordCounts.pprint()
 
     ssc.start()
     ssc.awaitTermination(25)
